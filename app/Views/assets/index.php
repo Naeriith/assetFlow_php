@@ -18,6 +18,74 @@
         </a>
     </div>
 
+<form method="GET" action="index.php"
+    class="bg-white border border-slate-200 rounded-xl p-5 shadow-sm space-y-4">
+
+    <input type="hidden" name="route" value="assets">
+
+    <div>
+        <label for="search" class="block text-sm font-medium text-slate-700 mb-1">
+            Rechercher un équipement
+        </label>
+        <input
+            type="text"
+            id="search"
+            name="search"
+            value="<?= e($search) ?>"
+            placeholder="Désignation ou code inventaire..."
+            class="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-brand-500">
+    </div>
+
+    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+
+        <div>
+            <label for="type" class="block text-sm font-medium text-slate-700 mb-1">
+                Type de matériel
+            </label>
+            <select name="type" id="type"
+                class="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm">
+                <option value="">Tous les types</option>
+                <option value="laptop" <?= $type === 'laptop' ? 'selected' : '' ?>>Laptop</option>
+                <option value="ecran" <?= $type === 'ecran' ? 'selected' : '' ?>>Écran</option>
+                <option value="smartphone" <?= $type === 'smartphone' ? 'selected' : '' ?>>Smartphone</option>
+                <option value="accessoire" <?= $type === 'accessoire' ? 'selected' : '' ?>>Accessoire</option>
+            </select>
+        </div>
+
+        <div>
+            <label for="statut" class="block text-sm font-medium text-slate-700 mb-1">
+                Statut
+            </label>
+            <select name="statut" id="statut"
+                class="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm">
+                <option value="">Tous les statuts</option>
+                <option value="disponible" <?= $statut === 'disponible' ? 'selected' : '' ?>>Disponible</option>
+                <option value="attribue" <?= $statut === 'attribue' ? 'selected' : '' ?>>Attribué</option>
+                <option value="maintenance" <?= $statut === 'maintenance' ? 'selected' : '' ?>>Maintenance</option>
+                <option value="rebut" <?= $statut === 'rebut' ? 'selected' : '' ?>>Rebut</option>
+            </select>
+        </div>
+    </div>
+
+    <!-- Boutons d'action -->
+    <div class="flex flex-wrap gap-3">
+        <button type="submit"
+            class="px-4 py-2 bg-brand-600 text-white rounded-lg text-sm font-medium hover:bg-brand-500">
+            Rechercher
+        </button>
+
+        <button type="submit" name="available" value="1"
+            class="px-4 py-2 bg-emerald-600 text-white rounded-lg text-sm font-medium hover:bg-emerald-500">
+            Matériels immédiatement déployables
+        </button>
+
+        <a href="index.php?route=assets"
+            class="px-4 py-2 border border-slate-300 text-slate-700 rounded-lg text-sm hover:bg-slate-50">
+            Réinitialiser
+        </a>
+    </div>
+</form>
+
     <?php if (!$dbConnected): ?>
         <div class="bg-amber-50 border border-amber-200 p-6 rounded-xl text-center space-y-2">
             <h3 class="text-sm font-bold text-amber-900">Base de données non accessible</h3>
@@ -28,7 +96,9 @@
         </div>
     <?php elseif (empty($assets)): ?>
         <div class="bg-white border border-slate-200 p-12 rounded-xl text-center space-y-2 text-slate-500">
-            <p class="text-sm">Aucun équipement enregistré dans le parc.</p>
+            <p class="text-sm">
+                Aucun équipement ne correspond à votre recherche.
+            </p>
         </div>
     <?php else: ?>
         <div class="bg-white border border-slate-200 rounded-xl overflow-hidden shadow-sm">
