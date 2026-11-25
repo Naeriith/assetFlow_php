@@ -68,25 +68,67 @@ class HomeController extends BaseController
         ]);
     }
 
-    public function assets(): void
-    {
-        $dbConnected = false;
-        $assets = [];
+public function assets(): void
+{
+    $dbConnected = false;
+    $assets = [];
 
-        try {
-            if (Database::isConnected()) {
-                $dbConnected = true;
-                $assetModel = new Asset();
-                $assets = $assetModel->findAll();
-            }
-        } catch (PDOException $e) {
-            $dbConnected = false;
-        }
+    $search = isset($_GET['search']) && is_string($_GET['search'])
+        ? trim($_GET['search'])
+        : '';
 
-        $this->render('assets/index', [
-            'pageTitle' => 'Inventaire du Parc Matériel',
-            'dbConnected' => $dbConnected,
-            'assets' => $assets,
-        ]);
+    $type = isset($_GET['type']) && is_string($_GET['type'])
+        ? $_GET['type']
+        : '';
+
+    $statut = isset($_GET['statut']) && is_string($_GET['statut'])
+        ? $_GET['statut']
+        : '';
+
+    $typesAutorises = ['laptop', 'ecran', 'smartphone', 'accessoire'];
+    $statutsAutorises = ['disponible', 'attribue', 'maintenance', 'rebut'];
+
+    if (!in_array($type, $typesAutorises, true)) {
+        $type = '';
     }
+
+    if (!in_array($statut, $statutsAutorises, true)) {
+        $statut = '';
+    }
+
+    $availableOnly = isset($_GET['available'])
+        && $_GET['available'] === '1';
+
+    if ($availableOnly) {
+        $statut = '';
+    }
+
+    try {
+        if (Database::isConnected()) {
+            $dbConnected = true;
+
+            $assetModel = new Asset();
+
+            $assets = $assetModel->search(
+                $search,
+                $type,
+                $statut,
+                $availableOnly
+            );
+        }
+    } catch (PDOException $e) {
+        $dbConnected = false;
+    }
+
+    $this->render('assets/index', [
+        'pageTitle' => 'Inventaire du Parc Matériel',
+        'dbConnected' => $dbConnected,
+        'assets' => $assets,
+        'search' => $search,
+        'type' => $type,
+        'statut' => $statut,
+        'availableOnly' => $availableOnly,
+    ]);
+}
+
 }
